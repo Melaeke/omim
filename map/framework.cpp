@@ -399,6 +399,7 @@ Framework::Framework(FrameworkParams const & params)
   , m_localAdsManager(bind(&Framework::GetMwmsByRect, this, _1, true /* rough */),
                       bind(&Framework::GetMwmIdByName, this, _1),
                       bind(&Framework::ReadFeatures, this, _1, _2))
+  , m_customBanksManager(*this)
   , m_displacementModeManager([this](bool show) {
     int const mode = show ? dp::displacement::kHotelMode : dp::displacement::kDefaultMode;
     if (m_drapeEngine != nullptr)
@@ -420,6 +421,7 @@ Framework::Framework(FrameworkParams const & params)
 
   m_ParsedMapApi.SetBookmarkManager(&m_bmManager);
   m_routingManager.SetBookmarkManager(&m_bmManager);
+  m_customBanksManager.SetBookmarkManager(&m_bmManager);
 
   // Init strings bundle.
   // @TODO. There are hardcoded strings below which are defined in strings.txt as well.
@@ -721,6 +723,7 @@ void Framework::DeregisterAllMaps()
 void Framework::LoadBookmarks()
 {
   m_bmManager.LoadBookmarks();
+  m_customBanksManager.LoadCustomBanks();
 }
 
 size_t Framework::AddBookmark(size_t categoryIndex, const m2::PointD & ptOrg, BookmarkData & bm)
@@ -1990,6 +1993,7 @@ void Framework::CreateDrapeEngine(ref_ptr<dp::OGLContextFactory> contextFactory,
   m_routingManager.SetDrapeEngine(make_ref(m_drapeEngine), allow3d);
   m_trafficManager.SetDrapeEngine(make_ref(m_drapeEngine));
   m_localAdsManager.SetDrapeEngine(make_ref(m_drapeEngine));
+  // TODO: do we need to add m_customBanksManager here?!
 
   benchmark::RunGraphicsBenchmark(this);
 }
@@ -2390,7 +2394,7 @@ void Framework::InvalidateUserMarks()
 
   vector<UserMarkType> const types = {UserMarkType::SEARCH_MARK, UserMarkType::API_MARK,
                                            UserMarkType::DEBUG_MARK,  UserMarkType::ROUTING_MARK,
-                                           UserMarkType::LOCAL_ADS_MARK};
+                                           UserMarkType::LOCAL_ADS_MARK, UserMarkType::CUSTOM_BANK_MARK};
   for (size_t typeIndex = 0; typeIndex < types.size(); typeIndex++)
     m_bmManager.GetUserMarksController(types[typeIndex]).NotifyChanges();
 }

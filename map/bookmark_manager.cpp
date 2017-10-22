@@ -3,6 +3,7 @@
 #include "map/local_ads_mark.hpp"
 #include "map/routing_mark.hpp"
 #include "map/user_mark.hpp"
+#include "map/custom_bank_manager.hpp"
 
 #include "platform/platform.hpp"
 #include "platform/settings.hpp"
@@ -21,12 +22,13 @@
 BookmarkManager::BookmarkManager(Framework & f)
   : m_framework(f)
 {
-  m_userMarkLayers.reserve(5);
+  m_userMarkLayers.reserve(6);
   m_userMarkLayers.emplace_back(new SearchUserMarkContainer(0.0 /* activePinDepth */, m_framework));
   m_userMarkLayers.emplace_back(new ApiUserMarkContainer(0.0 /* activePinDepth */, m_framework));
   m_userMarkLayers.emplace_back(new DebugUserMarkContainer(0.0 /* debugDepth */, m_framework));
   m_userMarkLayers.emplace_back(new RouteUserMarkContainer(0.0 /* activePinDepth */, m_framework));
   m_userMarkLayers.emplace_back(new LocalAdsMarkContainer(0.0 /* activePinDepth */, m_framework));
+  m_userMarkLayers.emplace_back(new CustomBankContainer(0.0 /* activePinDepth */, m_framework));
   UserMarkContainer::InitStaticMarks(FindUserMarksContainer(UserMarkType::SEARCH_MARK));
 }
 
@@ -226,6 +228,7 @@ UserMark const * BookmarkManager::FindNearestUserMark(TTouchRectHolder const & h
   finder(FindUserMarksContainer(UserMarkType::ROUTING_MARK));
   finder(FindUserMarksContainer(UserMarkType::SEARCH_MARK));
   finder(FindUserMarksContainer(UserMarkType::API_MARK));
+  finder(FindUserMarksContainer(UserMarkType::CUSTOM_BANK_MARK));
   for (auto & cat : m_categories)
   {
     finder(cat.get());

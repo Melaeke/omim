@@ -3,6 +3,7 @@
 #include "map/api_mark_point.hpp"
 #include "map/bookmark.hpp"
 #include "map/bookmark_manager.hpp"
+#include "map/custom_bank_manager.hpp"
 #include "map/displacement_mode_manager.hpp"
 #include "map/feature_vec_model.hpp"
 #include "map/local_ads_manager.hpp"
@@ -202,6 +203,8 @@ protected:
   TrafficManager m_trafficManager;
 
   LocalAdsManager m_localAdsManager;
+
+  CustomBankManager m_customBanksManager;
 
   /// This function will be called by m_storage when latest local files
   /// is downloaded.

@@ -23,7 +23,8 @@ enum class UserMarkType
   DEBUG_MARK,
   BOOKMARK_MARK,
   ROUTING_MARK,
-  LOCAL_ADS_MARK
+  LOCAL_ADS_MARK,
+  CUSTOM_BANK_MARK
 };
 
 class UserMarksController

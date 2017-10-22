@@ -16,6 +16,8 @@ HEADERS += \
     bookmark.hpp \
     bookmark_manager.hpp \
     chart_generator.hpp \
+    custom_bank_mark.hpp \
+    custom_bank_manager.hpp \
     displacement_mode_manager.hpp \
     displayed_categories_modifiers.hpp \
     feature_vec_model.hpp \
@@ -49,6 +51,8 @@ SOURCES += \
     bookmark.cpp \
     bookmark_manager.cpp \
     chart_generator.cpp \
+    custom_bank_mark.cpp \
+    custom_bank_manager.cpp \
     displacement_mode_manager.cpp \
     displayed_categories_modifiers.cpp \
     feature_vec_model.cpp \

@@ -55,6 +55,7 @@
 #define RESUME_FILE_EXTENSION ".resume"
 #define DOWNLOADING_FILE_EXTENSION ".downloading"
 #define BOOKMARKS_FILE_EXTENSION ".kml"
+#define CUSTOM_BANKS_FILE_EXTENSION ".bnk"
 #define ROUTING_FILE_EXTENSION ".routing"
 #define NOROUTING_FILE_EXTENSION ".norouting"
 

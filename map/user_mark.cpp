@@ -127,5 +127,6 @@ string DebugPrint(UserMark::Type type)
   case UserMark::Type::DEBUG_MARK: return "DEBUG_MARK";
   case UserMark::Type::ROUTING: return "ROUTING";
   case UserMark::Type::LOCAL_ADS: return "LOCAL_ADS";
+  case UserMark::Type::CUSTOM_BANK: return "CUSTOM_BANK";
   }
 }

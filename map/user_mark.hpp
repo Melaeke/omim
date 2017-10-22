@@ -31,7 +31,8 @@ public:
     MY_POSITION,
     ROUTING,
     LOCAL_ADS,
-    DEBUG_MARK
+    DEBUG_MARK,
+    CUSTOM_BANK,
   };
 
   UserMark(m2::PointD const & ptOrg, UserMarkContainer * container);
