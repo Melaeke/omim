@@ -12,6 +12,8 @@ SO, basically don't waste your time. If a UserMarksContainer calls NotifyChanges
 ======================================================================================
 
 what are the different UserMark Layers, how do they differ, are they drawn differently
+The layer is defined by <UserMarkRenderData::m_state>
+easiest way to solve layer clash is define a custom_bank layer
 
 
 drape_frontend/     (JUST REFERENCE, NOT EXECUTION FLOW)

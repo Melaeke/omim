@@ -32,7 +32,7 @@ CustomBankMark::CustomBankMark(m2::PointD const & ptOrg,
 {
 }
 
-void CustomBankMark::SetData(CustomBankData && data)
+void CustomBankMark::SetData(CustomBankData & data)
 {
   SetDirty();
   m_data = std::move(data);
@@ -42,6 +42,12 @@ dp::Anchor CustomBankMark::GetAnchor() const
 {
   return dp::Bottom;
 }
+
+df::RenderState::DepthLayer CustomBankMark::GetDepthLayer() const
+{
+  return df::RenderState::CustomBankLayer;
+}
+
 
 CustomBankContainer::CustomBankContainer(double layerDepth, Framework & fm)
   : UserMarkContainer(layerDepth, UserMarkType::CUSTOM_BANK_MARK, fm)

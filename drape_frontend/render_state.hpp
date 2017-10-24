@@ -20,6 +20,7 @@ public:
     NavigationLayer,
     RoutingMarkLayer,
     GuiLayer,
+    CustomBankLayer,
     LayersCount
   };
 

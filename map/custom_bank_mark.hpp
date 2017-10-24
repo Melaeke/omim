@@ -31,6 +31,8 @@ public:
   CustomBankMark(const m2::PointD & ptOrg, UserMarkContainer * container);
 
   dp::Anchor GetAnchor() const override;
+  df::RenderState::DepthLayer GetDepthLayer() const override;
+
   std::string GetSymbolName() const override { return m_data.m_symbolName; }
   UserMark::Type GetMarkType() const override { return UserMark::Type::CUSTOM_BANK; }
 
