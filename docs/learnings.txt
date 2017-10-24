@@ -1,0 +1,58 @@
+Main Question: HOW ARE BOOKMARKS ADDED INTO FR:Layers
+
+VERY VERY VERY IMPORTANT!!!!
+BackendRenderer only updates UserMarks(Bookmarks, LocalAds, ...) through FlushUserMarksMessage to FrontendRenderer
+they are called Flush because just like printf and stuff they locally buffer it(through the Batcher in this case)
+so Flushing means I'm done will all my edits, send it out to be rendered
+
+SO, basically don't waste your time. If a UserMarksContainer calls NotifyChanges()
+    frontendRenderer WILL HEAR ABOUT IT!!!
+
+
+======================================================================================
+
+what are the different UserMark Layers, how do they differ, are they drawn differently
+
+
+drape_frontend/     (JUST REFERENCE, NOT EXECUTION FLOW)
+    user_mark_generator
+        actually converts the user marks into vertex array through GenerateUserMarksGeometry
+    user_mark_shapes
+        defines the data structures that contain actually drawing data, also it is what 
+            {@code user_mark_generator} calls to perform OpenGL conversion
+    user_marks_provider
+        defines ({@code UserPointMark} that is extended by Bookmark, LocalAds, ...) and UserMarksProvider
+
+
+how many user_marks layers are there & what do they contain
+    (e.g: where are the bookmarks being drawn)
+
+Q: how do bookmarks gets passed into frontend_renderer
+A:  BookmarkManager::InitBookmarks()
+    -> for each m_categories->NotifyChanges()
+        m_categories is of type CategoriesCollection(vector<BookmarkCategory>)
+            BookmarkCategory is of type <UserMarkContainer> is basically bookmark file reader
+
+
+Q: routing and localAds have their own layer?
+A: YES, 
+
+m_layers are affected only at FR::952::AddToRenderGroup
+    which is called from the FR::AcceptMessage loop of 
+    Message: <FlushUserMarksMessage>
+    which is posted by BR::617::FlushUserMarksRenderData
+        which is std::bind as an argument to UserMarkGenerator
+    which calls it at UserMarksGenerator::222::GenerateUserMarksGeometry
+    which flushes all relevant drawing data(vertex array, texture info) back to 
+        BR::617::FlushUserMarksRenderData
+    which gets triggered when FinishTileReadMessage gets posted in BR::176::FinishTileReadMessage
+    
+
+
+LocalAdsManager can't be fully taken as an example b/c it also downloades its own 
+ads "map"(i.e: it is unnecessarily complicated)
+
+
+HIGH_IMPORTANCE
+Checkout drape_frontend\drape_engine.cpp::UpdateUserMarksGroup
+    it is about going through changes and notifying backendRenderer
