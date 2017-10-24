@@ -34,8 +34,8 @@ void CustomBankManager::ClearCustomBanks()
 {
   //m_customBanks.clear();
   auto & controller = m_bmManager->GetUserMarksController(UserMarkType::CUSTOM_BANK_MARK);
-  controller.Clear();
-  controller.NotifyChanges();
+  //controller.Clear();
+  //controller.NotifyChanges();
 }
 
 void CustomBankManager::SetBookmarkManager(BookmarkManager * bmManager)
@@ -66,8 +66,10 @@ void CustomBankManager::LoadCustomBanks()
 
 void CustomBankManager::NotifyChanges()
 {
+  /*
   auto & controller = m_bmManager->GetUserMarksController(UserMarkType::CUSTOM_BANK_MARK);
   controller.NotifyChanges();
+  */
 }
 
 /*
@@ -80,18 +82,15 @@ void CustomBankManager::LoadCustomBank(string const & filePath)
 
 namespace
 {
-  std::string const kPlacemark = "Placemark";
-  std::string const kStyle = "Style";
+  std::string const kBank = "Bank";
   std::string const kDocument = "Document";
-  std::string const kStyleUrl = "styleUrl";
+  std::string const kBankType = "bankType";
 
   std::string const kDefaultTrackColor = "DefaultTrackColor";
   float const kDefaultTrackWidth = 5.0f;
 
   // TODO: update array with valid bank icons
-  char const * bnkSupportedColors[] = {"placemark-red",    "placemark-blue",    "placemark-purple",
-                                     "placemark-yellow", "placemark-pink",    "placemark-brown",
-                                     "placemark-green",  "placemark-orange",  "placemark-hotel"};
+  char const * bnkSupportedColors[] = {"bank-lion",    "bank-oromiya",    "bank-somali", "bank-wegagen"};
 
   string FindMatchingStyle(string const & s, string const & fallback)
   {
@@ -146,10 +145,8 @@ namespace
     std::string m_name;
     std::string m_type;
     std::string m_description;
-    time_t m_timeStamp;
 
     m2::PointD m_org;
-    double m_scale;
 
     void Reset()
     {
@@ -157,8 +154,6 @@ namespace
       m_description.clear();
       m_org = m2::PointD(-1000, -1000);
       m_type.clear();
-      m_scale = -1.0;
-      m_timeStamp = my::INVALID_TIME_STAMP;
 
       m_styleId.clear();
       m_mapStyleId.clear();
@@ -212,7 +207,6 @@ namespace
 
         // set default pin
         if (m_type.empty())
-          // TODO: replace with custom_bank "default" icon
           m_type = bnkSupportedColors[0];
 
         return true;
@@ -229,7 +223,7 @@ namespace
 
     ~BNKParser()
     {
-      m_customBankManager.NotifyChanges();
+      //m_customBankManager.NotifyChanges();
     }
 
     bool Push(std::string const & name)
@@ -242,13 +236,6 @@ namespace
     {
       std::string attrInLowerCase = attr;
       strings::AsciiToLower(attrInLowerCase);
-
-      /*
-      if (IsValidAttribute(kStyle, value, attrInLowerCase))
-        m_styleId = value;
-      else if (IsValidAttribute(kStyleMap, value, attrInLowerCase))
-        m_mapStyleId = value;
-      */
     }
 
     bool IsValidAttribute(std::string const & type, std::string const & value,
@@ -267,7 +254,7 @@ namespace
     {
       ASSERT_EQUAL(m_tags.back(), tag, ());
 
-      if (tag == kPlacemark)
+      if (tag == kBank)
       {
         if (MakeValid())
         {
@@ -304,7 +291,7 @@ namespace
             controller.SetIsVisible(value == "0" ? false : true);
           }
         }
-        else if (prevTag == kPlacemark)
+        else if (prevTag == kBank)
         {
           if (currTag == "name")
             m_name = value;
@@ -315,29 +302,12 @@ namespace
           else if (currTag == "description")
             m_description = value;
         }
-        else if (ppTag == kPlacemark)
+        else if (ppTag == kBank)
         {
           if (prevTag == "Point")
           {
             if (currTag == "coordinates")
               SetOrigin(value);
-          }
-          else if (prevTag == "ExtendedData")
-          {
-            if (currTag == "mwm:scale")
-            {
-              if (!strings::to_double(value, m_scale))
-                m_scale = -1.0;
-            }
-          }
-          else if (prevTag == "TimeStamp")
-          {
-            if (currTag == "when")
-            {
-              m_timeStamp = my::StringToTimestamp(value);
-              if (m_timeStamp == my::INVALID_TIME_STAMP)
-                LOG(LWARNING, ("Invalid timestamp in Placemark:", value));
-            }
           }
         }
       }
