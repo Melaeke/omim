@@ -32,7 +32,7 @@ CustomBankMark::CustomBankMark(m2::PointD const & ptOrg,
 {
 }
 
-void CustomBankMark::SetData(CustomBankData & data)
+void CustomBankMark::SetData(CustomBankData && data)
 {
   SetDirty();
   m_data = std::move(data);
