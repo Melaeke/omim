@@ -722,6 +722,7 @@ void Framework::DeregisterAllMaps()
 
 void Framework::LoadBookmarks()
 {
+  LOG(LINFO, ("Load_Bookmarks Called"));
   m_bmManager.LoadBookmarks();
   m_customBanksManager.LoadCustomBanks();
 }
@@ -2390,6 +2391,7 @@ void Framework::UpdatePlacePageInfoForCurrentSelection()
 
 void Framework::InvalidateUserMarks()
 {
+  LOG(LINFO, ("InvalidateUserMarks Called"));
   m_bmManager.InitBookmarks();
 
   vector<UserMarkType> const types = {UserMarkType::SEARCH_MARK, UserMarkType::API_MARK,

@@ -11,6 +11,8 @@
 
 #include "indexer/scales.hpp"
 
+#include "base/logging.hpp"
+
 #include "geometry/transformations.hpp"
 
 #include "base/macros.hpp"
@@ -62,6 +64,12 @@ void CustomBankManager::LoadCustomBanks()
   */
   for (size_t i = 0; i < files.size(); ++i)
     LoadFromBNK(make_unique<FileReader>(dir + files[i]));
+
+  /*
+  std::ostringstream os;
+  os << "Custom_Bank_Manager Listed " << files.size();
+  LOG(LDEBUG, (os.str()));
+  */
 }
 
 void CustomBankManager::NotifyChanges()
@@ -295,7 +303,7 @@ namespace
         {
           if (currTag == "name")
             m_name = value;
-          else if (currTag == "styleUrl")
+          else if (currTag == "bankType")
           {
             m_type = GetSupportedBNKStyle(value);
           }
@@ -319,11 +327,15 @@ bool CustomBankManager::LoadFromBNK(ReaderPtr<Reader> const & reader)
 {
   ReaderSource<ReaderPtr<Reader> > src(reader);
   BNKParser parser(*this);
+  LOG(LDEBUG, ("Custom_Bank_Manager Starting File Reading"));
   if (ParseXML(src, parser, true))
+  {
+    LOG(LDEBUG, ("Custom_Bank_Manager File Reading Successful"));
     return true;
+  }
   else
   {
-    LOG(LERROR, ("XML read error. Probably, incorrect file encoding."));
+    LOG(LERROR, ("Custom_Bank_Manager Reading error"));
     return false;
   }
 }

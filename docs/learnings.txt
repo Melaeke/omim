@@ -1,6 +1,9 @@
+VERY IMPORTANT KEY LEARNINGS
+
 Main Question: HOW ARE BOOKMARKS ADDED INTO FR:Layers
 
-VERY VERY VERY IMPORTANT!!!!
+*** VERY VERY VERY IMPORTANT!!!! ***
+
 BackendRenderer only updates UserMarks(Bookmarks, LocalAds, ...) through FlushUserMarksMessage to FrontendRenderer
 they are called Flush because just like printf and stuff they locally buffer it(through the Batcher in this case)
 so Flushing means I'm done will all my edits, send it out to be rendered
@@ -8,8 +11,23 @@ so Flushing means I'm done will all my edits, send it out to be rendered
 SO, basically don't waste your time. If a UserMarksContainer calls NotifyChanges()
     frontendRenderer WILL HEAR ABOUT IT!!!
 
+*** VERY VERY VERY IMPORTANT!!!! ***
+FrontendRenderer::1021::GetVisiblePOI is where clicks are interpreated to find what was "intended" to be
+    selected on the map(it does distance calculation from point of click and checks against some minimum)
 
+You need to clean gradle project and compile again to changes to take effect
 ======================================================================================
+MAIN QUESTIONS
+
+Clicking on a bank is crashing it, we need to know why
+
+You need to invoke CustomBankLayer inside FR::RenderScene(otherwise, it won't be painted)
+    so figure out where and when it needs to be called
+
+update 1306 :: BuildOverlayTree     
+    - Add CustomBankMarkLayer to array
+look into GetDepthLayer()           BEEN HANDLED
+    - If we need to add anything
 
 what are the different UserMark Layers, how do they differ, are they drawn differently
 The layer is defined by <UserMarkRenderData::m_state>

@@ -684,5 +684,9 @@
   <symbol minX="1123" maxX="1134" minY="1024" maxY="1035" name="cities-s"/>
   <symbol minX="1134" maxX="1158" minY="1024" maxY="1035" name="arrow-xs"/>
   <symbol minX="1158" maxX="1169" minY="1024" maxY="1035" name="dot-s"/>
+  <symbol minX="1" maxX="115" minY="1055" maxY="1207" name="bank-lion"/>
+  <symbol minX="117" maxX="230" minY="1055" maxY="1207" name="bank-oromiya"/>
+  <symbol minX="232" maxX="338" minY="1055" maxY="1207" name="bank-somali"/>
+  <symbol minX="340" maxX="450" minY="1055" maxY="1207" name="bank-wegagen"/>
  </file>
 </root>

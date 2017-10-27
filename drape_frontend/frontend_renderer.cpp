@@ -1186,6 +1186,7 @@ void FrontendRenderer::RenderScene(ScreenBase const & modelView)
     StencilWriterGuard guard(make_ref(m_postprocessRenderer));
     RenderUserMarksLayer(modelView, RenderState::UserMarkLayer);
     RenderUserMarksLayer(modelView, RenderState::RoutingMarkLayer);
+    RenderUserMarksLayer(modelView, RenderState::CustomBankLayer);
   }
 
   m_myPositionController->Render(modelView, m_currentZoomLevel, make_ref(m_gpuProgramManager),
