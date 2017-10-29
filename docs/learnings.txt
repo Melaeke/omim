@@ -26,9 +26,12 @@ Extract tap info in framework.cpp::2404::OnTapEvent(check the call 2443::Activat
 ======================================================================================
 MUST SOLVE
 
-Clicking on a bank is crashing it, we need to know why
+To select a bank icon, we need to click its base(i.e: where the tip touches the map). Change to clicking 
+the bigger "tapella" of the icon just like bookmark(SEE HOW BOOKMARK DOES IT)
 
 Zooming crashes at level 15
+
+Add custom info in the bank detail so it appears at the android level
 
 ======================================================================================
 You need to invoke CustomBankLayer inside FR::RenderScene(otherwise, it won't be painted)
