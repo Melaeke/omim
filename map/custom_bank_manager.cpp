@@ -32,14 +32,6 @@ CustomBankManager::~CustomBankManager()
   ClearCustomBanks();
 }
 
-void CustomBankManager::ClearCustomBanks()
-{
-  //m_customBanks.clear();
-  auto & controller = m_bmManager->GetUserMarksController(UserMarkType::CUSTOM_BANK_MARK);
-  //controller.Clear();
-  //controller.NotifyChanges();
-}
-
 void CustomBankManager::SetBookmarkManager(BookmarkManager * bmManager)
 {
   m_bmManager = bmManager;
@@ -50,6 +42,11 @@ BookmarkManager * CustomBankManager::GetBookmarkManager()
   return m_bmManager;
 }
 
+void CustomBankManager::ClearCustomBanks()
+{
+  //m_bmManager->GetUserMarksController(UserMarkType::CUSTOM_BANK_MARK).Clear();
+}
+
 void CustomBankManager::LoadCustomBanks()
 {
   ClearCustomBanks();
@@ -58,10 +55,6 @@ void CustomBankManager::LoadCustomBanks()
 
   Platform::FilesList files;
   Platform::GetFilesByExt(dir, CUSTOM_BANKS_FILE_EXTENSION, files);
-  /*
-  for (size_t i = 0; i < files.size(); ++i)
-    LoadCustomBank(dir + files[i]);
-  */
   for (size_t i = 0; i < files.size(); ++i)
     LoadFromBNK(make_unique<FileReader>(dir + files[i]));
 
@@ -72,22 +65,6 @@ void CustomBankManager::LoadCustomBanks()
   */
 }
 
-void CustomBankManager::NotifyChanges()
-{
-  /*
-  auto & controller = m_bmManager->GetUserMarksController(UserMarkType::CUSTOM_BANK_MARK);
-  controller.NotifyChanges();
-  */
-}
-
-/*
-void CustomBankManager::LoadCustomBank(string const & filePath)
-{
-  std::unique_ptr<CustomBankContainer> custom_bank(CustomBankContainer::CreateFromBNKFile(filePath, m_framework));
-  ASSERT(custom_bank != null, ());
-}
-*/
-
 namespace
 {
   std::string const kBank = "Bank";
@@ -97,7 +74,6 @@ namespace
   std::string const kDefaultTrackColor = "DefaultTrackColor";
   float const kDefaultTrackWidth = 5.0f;
 
-  // TODO: update array with valid bank icons
   char const * bnkSupportedColors[] = {"bank-lion",    "bank-oromiya",    "bank-somali", "bank-wegagen"};
 
   string FindMatchingStyle(string const & s, string const & fallback)
@@ -142,7 +118,7 @@ namespace
 
   class BNKParser
   {
-    CustomBankManager & m_customBankManager;
+    BookmarkManager * bmManager;
 
     std::vector<std::string> m_tags;
     GeometryType m_geometryType;
@@ -223,15 +199,14 @@ namespace
     }
 
   public:
-    BNKParser(CustomBankManager & customBankManager)
-      : m_customBankManager(customBankManager)
+    BNKParser(BookmarkManager * manager)
+      : bmManager(manager)
     {
       Reset();
     }
 
     ~BNKParser()
     {
-      //m_customBankManager.NotifyChanges();
     }
 
     bool Push(std::string const & name)
@@ -270,8 +245,8 @@ namespace
           {
             // NOTE: the {@code CreateUserMark} adds it in the list of user marks
             // inside {@code BASE::UserMarkContainer}
-            auto & controller = m_customBankManager.GetBookmarkManager()->GetUserMarksController(UserMarkType::CUSTOM_BANK_MARK);
-            CustomBankMark * cb = static_cast<CustomBankMark *>(controller.CreateUserMark(m_org));
+            UserMarkNotificationGuard guard(*bmManager, UserMarkType::CUSTOM_BANK_MARK);
+            CustomBankMark * cb = static_cast<CustomBankMark *>(guard.m_controller.CreateUserMark(m_org));
             cb->SetData(CustomBankData(m_name, m_type));
           }
         }
@@ -295,18 +270,16 @@ namespace
         if (prevTag == kDocument)
         {
           if (currTag == "visibility") {
-            auto & controller = m_customBankManager.GetBookmarkManager()->GetUserMarksController(UserMarkType::CUSTOM_BANK_MARK);
-            controller.SetIsVisible(value == "0" ? false : true);
+            UserMarkNotificationGuard guard(*bmManager, UserMarkType::CUSTOM_BANK_MARK);
+            guard.m_controller.SetIsVisible(value == "0" ? false : true);
           }
         }
         else if (prevTag == kBank)
         {
           if (currTag == "name")
             m_name = value;
-          else if (currTag == "bankType")
-          {
+          else if (currTag == kBankType)
             m_type = GetSupportedBNKStyle(value);
-          }
           else if (currTag == "description")
             m_description = value;
         }
@@ -326,7 +299,8 @@ namespace
 bool CustomBankManager::LoadFromBNK(ReaderPtr<Reader> const & reader)
 {
   ReaderSource<ReaderPtr<Reader> > src(reader);
-  BNKParser parser(*this);
+  ASSERT(m_bmManager != nullptr, ());
+  BNKParser parser(m_bmManager);
   LOG(LDEBUG, ("Custom_Bank_Manager Starting File Reading"));
   if (ParseXML(src, parser, true))
   {
@@ -339,192 +313,3 @@ bool CustomBankManager::LoadFromBNK(ReaderPtr<Reader> const & reader)
     return false;
   }
 }
-
-namespace
-{
-char const * bnkHeader =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n"
-    "<Document>\n"
-    "  <Style id=\"placemark-blue\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-blue.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-    "  <Style id=\"placemark-brown\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-brown.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-    "  <Style id=\"placemark-green\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-green.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-    "  <Style id=\"placemark-orange\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-orange.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-    "  <Style id=\"placemark-pink\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-pink.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-    "  <Style id=\"placemark-purple\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-purple.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-    "  <Style id=\"placemark-red\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-red.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-    "  <Style id=\"placemark-yellow\">\n"
-    "    <IconStyle>\n"
-    "      <Icon>\n"
-    "        <href>http://mapswith.me/placemarks/placemark-yellow.png</href>\n"
-    "      </Icon>\n"
-    "    </IconStyle>\n"
-    "  </Style>\n"
-;
-
-char const * bnkFooter =
-    "</Document>\n"
-    "</kml>\n";
-}
-
-/*
-namespace
-{
-  inline void SaveStringWithCDATA(std::ostream & stream, std::string const & s)
-  {
-    // According to kml/xml spec, we need to escape special symbols with CDATA
-    if (s.find_first_of("<&") != std::string::npos)
-      stream << "<![CDATA[" << s << "]]>";
-    else
-      stream << s;
-  }
-}
-*/
-
-/*
-void CustomBankManager::SaveToBNK(std::ostream & s)
-{
-  s << kmlHeader;
-
-  // Use CDATA if we have special symbols in the name
-  s << "  <name>";
-  SaveStringWithCDATA(s, GetName());
-  s << "</name>\n";
-
-  s << "  <visibility>" << (IsVisible() ? "1" : "0") <<"</visibility>\n";
-
-  // Bookmarks are stored to KML file in reverse order, so, least
-  // recently added bookmark will be stored last. The reason is that
-  // when bookmarks will be loaded from the KML file, most recently
-  // added bookmark will be loaded last and in accordance with current
-  // logic will added to the beginning of the bookmarks list. Thus,
-  // this method preserves LRU bookmarks order after store -> load
-  // actions.
-  //
-  // Loop invariant: on each iteration count means number of already
-  // stored bookmarks and i means index of the bookmark that should be
-  // processed during the iteration. That's why i is initially set to
-  // GetBookmarksCount() - 1, i.e. to the last bookmark in the
-  // bookmarks list.
-  for (size_t count = 0, i = GetUserMarkCount() - 1;
-       count < GetUserPointCount(); ++count, --i)
-  {
-    CustomBankMark const * bm = static_cast<CustomBankMark const *>(GetUserMark(i));
-    s << "  <Placemark>\n";
-    s << "    <name>";
-    SaveStringWithCDATA(s, bm->GetName());
-    s << "</name>\n";
-
-    if (!bm->GetDescription().empty())
-    {
-      s << "    <description>";
-      SaveStringWithCDATA(s, bm->GetDescription());
-      s << "</description>\n";
-    }
-
-    time_t const timeStamp = bm->GetTimeStamp();
-    if (timeStamp != my::INVALID_TIME_STAMP)
-    {
-      std::string const strTimeStamp = my::TimestampToString(timeStamp);
-      ASSERT_EQUAL(strTimeStamp.size(), 20, ("We always generate fixed length UTC-format timestamp"));
-      s << "    <TimeStamp><when>" << strTimeStamp << "</when></TimeStamp>\n";
-    }
-
-    s << "    <styleUrl>#" << bm->GetType() << "</styleUrl>\n"
-      << "    <Point><coordinates>" << PointToString(bm->GetPivot()) << "</coordinates></Point>\n";
-
-    double const scale = bm->GetScale();
-    if (scale != -1.0)
-    {
-      /// @todo Factor out to separate function to use for other custom params.
-      s << "    <ExtendedData xmlns:mwm=\"http://mapswith.me\">\n"
-        << "      <mwm:scale>" << bm->GetScale() << "</mwm:scale>\n"
-        << "    </ExtendedData>\n";
-    }
-
-    s << "  </Placemark>\n";
-  }
-
-  // Saving tracks
-  for (size_t i = 0; i < GetTracksCount(); ++i)
-  {
-    Track const * track = GetTrack(i);
-
-    s << "  <Placemark>\n";
-    s << "    <name>";
-    SaveStringWithCDATA(s, track->GetName());
-    s << "</name>\n";
-
-    ASSERT_GREATER(track->GetLayerCount(), 0, ());
-
-    s << "<Style><LineStyle>";
-    dp::Color const & col = track->GetColor(0);
-    s << "<color>"
-      << NumToHex(col.GetAlfa())
-      << NumToHex(col.GetBlue())
-      << NumToHex(col.GetGreen())
-      << NumToHex(col.GetRed());
-    s << "</color>\n";
-
-    s << "<width>"
-      << track->GetWidth(0);
-    s << "</width>\n";
-
-    s << "</LineStyle></Style>\n";
-    // stop style saving
-
-    s << "    <LineString><coordinates>";
-
-    Track::PolylineD const & poly = track->GetPolyline();
-    for (auto pt = poly.Begin(); pt != poly.End(); ++pt)
-      s << PointToString(*pt) << " ";
-
-    s << "    </coordinates></LineString>\n"
-      << "  </Placemark>\n";
-  }
-
-  s << kmlFooter;
-}
-*/

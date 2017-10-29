@@ -16,11 +16,21 @@ FrontendRenderer::1021::GetVisiblePOI is where clicks are interpreated to find w
     selected on the map(it does distance calculation from point of click and checks against some minimum)
 
 You need to clean gradle project and compile again to changes to take effect
+
+
+checkout FR::1476::OnTap && m_blockTapEvents(who sets it, and why do they want to block taps)
+
+FR::1499::m_tapEventInfoFn taps are passed to it
+
+Extract tap info in framework.cpp::2404::OnTapEvent(check the call 2443::ActivateMapSelection)
 ======================================================================================
-MAIN QUESTIONS
+MUST SOLVE
 
 Clicking on a bank is crashing it, we need to know why
 
+Zooming crashes at level 15
+
+======================================================================================
 You need to invoke CustomBankLayer inside FR::RenderScene(otherwise, it won't be painted)
     so figure out where and when it needs to be called
 
