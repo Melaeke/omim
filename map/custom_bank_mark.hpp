@@ -37,6 +37,8 @@ public:
   UserMark::Type GetMarkType() const override { return UserMark::Type::CUSTOM_BANK; }
 
   void SetData(CustomBankData && data);
+  CustomBankData const & GetData() const;
+
 private:
   CustomBankData m_data;
 };

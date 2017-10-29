@@ -682,6 +682,7 @@ private:
   void FillSearchResultInfo(SearchMarkPoint const & smp, place_page::Info & info) const;
   void FillMyPositionInfo(place_page::Info & info, df::TapInfo const & tapInfo) const;
   void FillRouteMarkInfo(RouteMarkPoint const & rmp, place_page::Info & info) const;
+  void FillCustomBankInfo(CustomBankMark const & bank, place_page::Info & info) const;
 
 public:
   void FillBookmarkInfo(Bookmark const & bmk, BookmarkAndCategory const & bac, place_page::Info & info) const;

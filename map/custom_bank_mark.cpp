@@ -38,6 +38,11 @@ void CustomBankMark::SetData(CustomBankData && data)
   m_data = std::move(data);
 }
 
+CustomBankData const & CustomBankMark::GetData() const
+{
+  return m_data;
+}
+
 dp::Anchor CustomBankMark::GetAnchor() const
 {
   return dp::Bottom;

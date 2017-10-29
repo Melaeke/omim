@@ -984,6 +984,12 @@ void Framework::FillRouteMarkInfo(RouteMarkPoint const & rmp, place_page::Info &
   info.SetIntermediateIndex(rmp.GetIntermediateIndex());
 }
 
+void Framework::FillCustomBankInfo(CustomBankMark const & bank, place_page::Info & info) const
+{
+  FillPointInfo(bank.GetPivot(), {} /* customTitle */, info);
+  info.SetCustomName(bank.GetData().m_name);
+}
+
 void Framework::ShowBookmark(BookmarkAndCategory const & bnc)
 {
   StopLocationFollow();
@@ -2519,6 +2525,9 @@ df::SelectionShape::ESelectedObject Framework::OnTapEventImpl(TapEvent const & t
       break;
     case UserMark::Type::ROUTING:
       FillRouteMarkInfo(*static_cast<RouteMarkPoint const *>(mark), outInfo);
+      break;
+    case UserMark::Type::CUSTOM_BANK:
+      FillCustomBankInfo(*static_cast<CustomBankMark const *>(mark), outInfo);
       break;
     default:
       ASSERT(false, ("FindNearestUserMark returned invalid mark."));
