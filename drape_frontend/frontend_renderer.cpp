@@ -2108,4 +2108,18 @@ m2::AnyRectD TapInfo::GetRoutingPointSearchRect(ScreenBase const & screen) const
   screen.GetTouchRect(screen.GtoP(m_mercator), halfSize + bmAddition, result);
   return result;
 }
+
+m2::AnyRectD TapInfo::GetCustomBankSearchRect(ScreenBase const & screen) const
+{
+  static int constexpr kBankTouchPixelIncrease = 35;
+
+  m2::AnyRectD result;
+  double const bmAddition = kBankTouchPixelIncrease * VisualParams::Instance().GetVisualScale();
+  double const halfSize = VisualParams::Instance().GetTouchRectRadius();
+  double const pxWidth = halfSize;
+  double const pxHeight = halfSize + bmAddition;
+  screen.GetTouchRect(screen.GtoP(m_mercator) + m2::PointD(0, bmAddition),
+                      pxWidth, pxHeight, result);
+  return result;
+}
 }  // namespace df

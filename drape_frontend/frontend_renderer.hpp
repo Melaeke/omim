@@ -61,6 +61,7 @@ struct TapInfo
   m2::AnyRectD GetDefaultSearchRect(ScreenBase const & screen) const;
   m2::AnyRectD GetBookmarkSearchRect(ScreenBase const & screen) const;
   m2::AnyRectD GetRoutingPointSearchRect(ScreenBase const & screen) const;
+  m2::AnyRectD GetCustomBankSearchRect(ScreenBase const & screen) const;
 };
 
 class FrontendRenderer : public BaseRenderer,

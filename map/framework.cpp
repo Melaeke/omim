@@ -2569,6 +2569,8 @@ UserMark const * Framework::FindUserMarkInTapPosition(df::TapInfo const & tapInf
       return tapInfo.GetBookmarkSearchRect(m_currentModelView);
     if (type == UserMarkType::ROUTING_MARK)
       return tapInfo.GetRoutingPointSearchRect(m_currentModelView);
+    if (type == UserMarkType::CUSTOM_BANK_MARK)
+      return tapInfo.GetCustomBankSearchRect(m_currentModelView);
     return tapInfo.GetDefaultSearchRect(m_currentModelView);
   });
   return mark;
