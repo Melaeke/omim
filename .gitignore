@@ -166,3 +166,6 @@ server
 cmake-build-*
 
 designer_version.h
+
+*.swp
+*.swp
