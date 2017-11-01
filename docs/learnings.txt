@@ -24,14 +24,15 @@ FR::1499::m_tapEventInfoFn taps are passed to it
 
 Extract tap info in framework.cpp::2404::OnTapEvent(check the call 2443::ActivateMapSelection)
 ======================================================================================
-MUST SOLVE
+TODOs:
 
-To select a bank icon, we need to click its base(i.e: where the tip touches the map). Change to clicking 
-the bigger "tapella" of the icon just like bookmark(SEE HOW BOOKMARK DOES IT)
-
-Zooming crashes at level 15
-
-Add custom info in the bank detail so it appears at the android level
+    1) Implement the banking "skeleton" app
+    2) Customize PlacePageView(make it display "Call", "name", "Type?(bank, shop)", "working hours")
+    3) Make the bank places be downloadable
+    4) Figure out how to embed the map in a fragment so it won't cover the whole screen(half-half)
+    5) Package Ethiopia's map with the app(can just copying it to data/ work?)
+    6) Fix: Zooming crashes at level 15
+    7) Compile it to release version
 
 ======================================================================================
 You need to invoke CustomBankLayer inside FR::RenderScene(otherwise, it won't be painted)
@@ -47,7 +48,16 @@ The layer is defined by <UserMarkRenderData::m_state>
 easiest way to solve layer clash is define a custom_bank layer
 
 
-drape_frontend/     (JUST REFERENCE, NOT EXECUTION FLOW)
+=====================================
+|
+|   Reference, (Not to be deleted)
+|
+=====================================
+BEGIN_QUESTION: 
+    How do user mark objects get rendered?
+
+Answer:
+drape_frontend/     
     user_mark_generator
         actually converts the user marks into vertex array through GenerateUserMarksGeometry
     user_mark_shapes
@@ -55,37 +65,13 @@ drape_frontend/     (JUST REFERENCE, NOT EXECUTION FLOW)
             {@code user_mark_generator} calls to perform OpenGL conversion
     user_marks_provider
         defines ({@code UserPointMark} that is extended by Bookmark, LocalAds, ...) and UserMarksProvider
+END_QUESTION
 
+BEGIN_QUESTION: 
+    How does PLacePageView inside Android work
 
-how many user_marks layers are there & what do they contain
-    (e.g: where are the bookmarks being drawn)
-
-Q: how do bookmarks gets passed into frontend_renderer
-A:  BookmarkManager::InitBookmarks()
-    -> for each m_categories->NotifyChanges()
-        m_categories is of type CategoriesCollection(vector<BookmarkCategory>)
-            BookmarkCategory is of type <UserMarkContainer> is basically bookmark file reader
-
-
-Q: routing and localAds have their own layer?
-A: YES, 
-
-m_layers are affected only at FR::952::AddToRenderGroup
-    which is called from the FR::AcceptMessage loop of 
-    Message: <FlushUserMarksMessage>
-    which is posted by BR::617::FlushUserMarksRenderData
-        which is std::bind as an argument to UserMarkGenerator
-    which calls it at UserMarksGenerator::222::GenerateUserMarksGeometry
-    which flushes all relevant drawing data(vertex array, texture info) back to 
-        BR::617::FlushUserMarksRenderData
-    which gets triggered when FinishTileReadMessage gets posted in BR::176::FinishTileReadMessage
+Answer:
+    Sets up the views in 372:initViews()
+    Adds the appropriate 473::PlacePageView buttons
     
-
-
-LocalAdsManager can't be fully taken as an example b/c it also downloades its own 
-ads "map"(i.e: it is unnecessarily complicated)
-
-
-HIGH_IMPORTANCE
-Checkout drape_frontend\drape_engine.cpp::UpdateUserMarksGroup
-    it is about going through changes and notifying backendRenderer
+END_QUESTION
