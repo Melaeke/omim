@@ -364,11 +364,9 @@ def createCppBuildTask(buildType, arch, suffix) {
     def args = ['bash', '../tools/autobuild/android.sh', buildType]
     if (!arch.isEmpty())
       args += arch
-    commandLine args
-    /*
+    //commandLine args
     def dummyArgs = ['bash', '../tools/autobuild/dummy.sh']
     commandLine dummyArgs
-    */
   }
 }
 
@@ -377,11 +375,9 @@ def createNdkBuildTask(buildType, arch, suffix, flags) {
     def ndkParams = ([project.ext.NDK_BUILD, project.ext.PARAM_PARALLEL_TASK_COUNT] + flags.split(' ')).flatten()
     if (!arch.isEmpty())
       ndkParams += "NDK_ABI_TO_BUILD=${arch}"
-    commandLine ndkParams
-    /*
+    //commandLine ndkParams
     def dummyArgs = ['bash', '../tools/autobuild/dummy.sh']
     commandLine dummyArgs
-    */
   }
 }
 

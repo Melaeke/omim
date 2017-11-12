@@ -264,7 +264,7 @@ public class SplashActivity extends AppCompatActivity
   private void processNavigation()
   {
     Intent input = getIntent();
-    Intent intent = new Intent(this, DownloadResourcesLegacyActivity.class);
+    Intent intent = new Intent(this, BankActivity.class);
     if (input != null)
     {
       Class<? extends Activity> type = (Class<? extends Activity>) input.getSerializableExtra(EXTRA_ACTIVITY_TO_START);

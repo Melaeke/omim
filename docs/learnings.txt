@@ -24,8 +24,14 @@ FR::1499::m_tapEventInfoFn taps are passed to it
 
 Extract tap info in framework.cpp::2404::OnTapEvent(check the call 2443::ActivateMapSelection)
 ======================================================================================
-TODOs:
+BUGS to FIX:
+    1) It is showing download maps even for ethiopia(its been downloaded)
 
+======================================================================================
+TODOs:
+    FIX: maybe start at the SplashActivity(make it HelloCash Splash) // b/c we also need to check if permissions are granted
+
+    0) Start at the bank and directly go to the map(skip the SplashActivity & DownloadResourcesActivity)
     1) Implement the banking "skeleton" app
     2) Customize PlacePageView(make it display "Call", "name", "Type?(bank, shop)", "working hours")
     3) Make the bank places be downloadable
@@ -53,9 +59,48 @@ easiest way to solve layer clash is define a custom_bank layer
 |   Reference, (Not to be deleted)
 |
 =====================================
+############# App lifecycle
+<Android Manifest>
+    DownloadResourcesActivity is alias of <SplashActivity> used to add the LAUNCHER intent
+
+MwmActivity has a launchMode=singleTask which means only a single instance of this activity runs at a time
+
 BEGIN_QUESTION: 
     How do user mark objects get rendered?
 
+ANALYSIS_OF SplashActivity(A):
+
+    // CHECK OUT HOW THE DURATION OF SPLASHACTIVITY "SPLASHING" GETS DETERMINED!!!
+
+    WHEN IS IT CREATED: 
+        At app launch(b/c it is the launcher) && It is created in App launch && 
+        EVERY CHILD of base/BaseMwmFragmentActivity(almost all activities used)
+            will launch SplashActivity if :
+                1) The core is not initialized(graphics & other core services)
+                2) External permissions is not granted
+    WHAT DOES IT DO:
+        It displays the "Maps.ME Debug" Splash Screen 
+        It then displays the permission(storge, accessing location, ..,) dialogs
+    WHEN DOES IT GO AWAY:
+        Basically when permissions have been granted
+    Where does it go to:
+        2 options
+            If it is first time launching(& CHECK)
+                goes to DownloadResourcesLegacyActivity
+            If it was launched by other base/BaseMwmFragmentActivity
+                it launches the activity that launched it 
+
+ANALYSIS_OF DownloadResourcesLegacyActivity:
+    WHEN IS IT CREATED:
+        Mainly launched from SplashActivity[check (A)]
+
+    WHAT DOES IT DO:
+        It checks(natively) if we need to download map[checks the folder & sees if map exists]
+        If there is, it launches downloader natively
+        If no need to download, it LAUNCHES MwmActivity
+    NOTE: majority of the code are IntentProcessors, (they collect all that Intent Filtering in the Manifest && pass it to MwmActivity)
+
+############# UI logic
 Answer:
 drape_frontend/     
     user_mark_generator
